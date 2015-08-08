@@ -1,4 +1,4 @@
-package urgame;
+package snake;
 
 import flambe.Entity;
 import flambe.System;
