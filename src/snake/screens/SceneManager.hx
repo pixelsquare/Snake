@@ -66,25 +66,27 @@ class SceneManager
 		gameGameOverScreen = new GameOverScreen();
 		gameDelayScreen = new GameDelayScreen();
 		
-		System.stage.resize.connect(function() {
-			var targetWidth: Int = 1136;
-			var targetHeight: Int = 640;
-			
-			var scale = FMath.min(System.stage.width / targetWidth, System.stage.height / targetHeight);
-			if (scale > 1) scale = 1;
-			
-			gameGameScreen.screenScene.get(FillSprite).setScale(scale).setXY(
-				(System.stage.width - targetWidth * scale) / 2, 
-				(System.stage.height - targetHeight * scale) / 2
-			);
-			
-			gameGameScreen.screenScene.get(Sprite).setScale(scale).setXY(
-				(System.stage.width - targetWidth * scale) / 2, 
-				(System.stage.height - targetHeight * scale) / 2
-			);
-			
-			gameGameScreen.screenScene.get(Sprite).scissor = new Rectangle(0, 0, targetWidth, targetHeight);
-		});
+		//System.stage.resize.connect(function() {
+			//var targetWidth: Int = 1136;
+			//var targetHeight: Int = 640;
+			//
+			//var scale = FMath.min(System.stage.width / targetWidth, System.stage.height / targetHeight);
+			//if (scale > 1) scale = 1;
+			//
+			//Utils.ConsoleLog(scale + "");
+			//
+			//gameGameScreen.screenScene.get(FillSprite).setScale(scale).setXY(
+				//(System.stage.width - targetWidth * scale) / 2, 
+				//(System.stage.height - targetHeight * scale) / 2
+			//);
+			//
+			//gameGameScreen.screenScene.get(Sprite).setScale(scale).setXY(
+				//(System.stage.width - targetWidth * scale) / 2, 
+				//(System.stage.height - targetHeight * scale) / 2
+			//);
+			//
+			//gameGameScreen.screenScene.get(Sprite).scissor = new Rectangle(0, 0, targetWidth, targetHeight);
+		//});
 	}
 	
 	public function ShowTitleScreen(animate: Bool): Void {

@@ -49,7 +49,8 @@ class SnakeNode extends Component
 		background = new FillSprite(0xFFFFFF, 0, 0);
 		SetColor(0xFFFFFF);
 		SetXY(0, 0);
-		SetSize(System.stage.width * 0.018, System.stage.height * 0.022);
+		//SetSize(System.stage.width * 0.018, System.stage.height * 0.022);
+		SetSize((System.stage.width * 0.02) * 0.8, System.stage.height * 0.02);
 		gridEntity.addChild(new Entity().add(background));
 	}
 	

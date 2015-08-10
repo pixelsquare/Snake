@@ -60,7 +60,7 @@ class GameScreen extends Component implements IScreen
 		screenScene = new Entity();
 		screenScene.add(this);
 		
-		var background: FillSprite = new FillSprite(0x000000, System.stage.width, System.stage.height);
+		var background: FillSprite = new FillSprite(0x202020, System.stage.width, System.stage.height);
 		screenScene.addChild(new Entity().add(background));
 		
 		var scoreFont: Font = new Font(manager.gameAssets, AssetName.FONT_ARIAL_32);
@@ -104,8 +104,8 @@ class GameScreen extends Component implements IScreen
 				var totalHeight: Float = snakeGrid.height._ * GRID_COLUMNS;
 				
 				snakeGrid.SetXY(
-					(System.stage.width * 0.4 - (totalWidth / 2)) + jj * GRID_SPACING,
-					(System.stage.height * 0.45 - (totalHeight / 2)) + ii * GRID_SPACING
+					(System.stage.width * 0.375 - (totalWidth / 2)) + jj * GRID_SPACING,
+					(System.stage.height * 0.425 - (totalHeight / 2)) + ii * GRID_SPACING
 				);
 				
 				screenScene.addChild(new Entity().add(snakeGrid));
