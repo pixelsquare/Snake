@@ -1,4 +1,4 @@
-package snake;
+package snake.screens;
 
 import flambe.Component;
 import flambe.display.FillSprite;
@@ -11,9 +11,10 @@ import flambe.Entity;
 import flambe.input.PointerEvent;
 import flambe.System;
 import flambe.Disposer;
+import snake.utils.AssetName;
 
-import snake.SceneManager;
-import snake.IScreen;
+import snake.screens.SceneManager;
+import snake.screens.IScreen;
 import snake.pxlSq.Utils;
 
 /**
@@ -22,16 +23,18 @@ import snake.pxlSq.Utils;
  */
 class ChooseYourLevelScreen extends Component implements IScreen
 {
+	public var screenName(default, null): String = "Choose your level Screen";
+	public var screenScene(default, null): Entity;
 	public var screenDisposer(default, null): Disposer;
 	
 	public function new () { }
 	
 	public function Initialize(manager: SceneManager): Entity {
-		var scene: Entity = new Entity();
-		scene.add(this);
+		screenScene = new Entity();
+		screenScene.add(this);
 		
 		var background: FillSprite = new FillSprite(0x202020, System.stage.width, System.stage.height);
-		scene.addChild(new Entity().add(background));
+		screenScene.addChild(new Entity().add(background));
 		
 		var chooseYourLevelFont: Font = new Font(manager.gameAssets, AssetName.FONT_ARIAL_32);
 		var chooseYourLevelText: TextSprite = new TextSprite(chooseYourLevelFont, "Choose your level");
@@ -40,29 +43,30 @@ class ChooseYourLevelScreen extends Component implements IScreen
 			System.stage.width / 2,
 			System.stage.height * 0.3
 		);
-		scene.addChild(new Entity().add(chooseYourLevelText));
+		screenScene.addChild(new Entity().add(chooseYourLevelText));
 		
 		for (ii in 0...3) {
 			var levelEntity: Entity = new Entity();
 			var levelBG: ImageSprite = new ImageSprite(manager.buttonDefaultTexture);
 			levelBG.centerAnchor();
 			
-			levelBG.pointerIn.connect(function(event: PointerEvent) {
+			screenDisposer.add(levelBG.pointerIn.connect(function(event: PointerEvent) {
 				levelBG.texture = manager.buttonHoverTexture;
-			});
+			}));
 			
-			levelBG.pointerOut.connect(function(event: PointerEvent) {
+			screenDisposer.add(levelBG.pointerOut.connect(function(event: PointerEvent) {
 				levelBG.texture = manager.buttonDefaultTexture;
-			});
+			}));
 			
-			levelBG.pointerDown.connect(function(event: PointerEvent) {
+			screenDisposer.add(levelBG.pointerDown.connect(function(event: PointerEvent) {
 				levelBG.texture = manager.buttonActiveTexture;
-			});
+			}));
 			
-			levelBG.pointerUp.connect(function(event: PointerEvent) {
+			screenDisposer.add(levelBG.pointerUp.connect(function(event: PointerEvent) {
 				levelBG.texture = manager.buttonDefaultTexture;
 				manager.ShowGameScreen(false);
-			});
+				manager.ShowGameDelayScreen(false);
+			}));
 			
 			levelEntity.add(levelBG);
 			
@@ -84,28 +88,32 @@ class ChooseYourLevelScreen extends Component implements IScreen
 			
 			levelEntity.addChild(new Entity().add(levelText));
 			
-			scene.addChild(levelEntity);
+			screenScene.addChild(levelEntity);
 		}
 		
-		return scene;
+		return screenScene;
 	}
 	
 	override public function onAdded() 
 	{
 		super.onAdded();
-		Utils.ConsoleLog("ADDED!");
+		Utils.ConsoleLog(screenName + " ADDED!");
+		screenDisposer = owner.get(Disposer);
+		if (screenDisposer == null) {
+			owner.add(screenDisposer = new Disposer());
+		}
 	}
 	
 	override public function onRemoved() 
 	{
 		super.onRemoved();
-		Utils.ConsoleLog("REMOVED!");
+		Utils.ConsoleLog(screenName + " REMOVED!");
 	}
 	
 	override public function dispose() 
 	{
 		super.dispose();
-		Utils.ConsoleLog("DISPOSED!");
+		Utils.ConsoleLog(screenName + " DISPOSED!");
 		screenDisposer.dispose();
 	}
 }

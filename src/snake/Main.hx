@@ -8,6 +8,8 @@ import flambe.asset.Manifest;
 import flambe.display.FillSprite;
 import flambe.display.ImageSprite;
 import flambe.util.Promise;
+import snake.screens.PreloaderScene;
+import snake.screens.SceneManager;
 
 import snake.pxlSq.Utils;
 
@@ -37,7 +39,7 @@ class Main
 			
 			var sceneManager: SceneManager = new SceneManager();
 			sceneManager.Initialize(pack, director, storage);
-			sceneManager.ShowTitleScreen(false);
+			sceneManager.ShowChooseYourLevelScreen(false);
 		});
 		
         //loader.get(onSuccess);

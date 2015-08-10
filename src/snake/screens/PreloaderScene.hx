@@ -1,4 +1,4 @@
-package snake;
+package snake.screens;
 
 import flambe.System;
 import flambe.asset.AssetPack;
