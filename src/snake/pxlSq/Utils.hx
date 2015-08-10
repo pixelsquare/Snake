@@ -1,6 +1,8 @@
 package snake.pxlSq;
 
 import haxe.xml.Fast;
+import snake.SnakeNode;
+import snake.screens.GameScreen;
 
 #if flash
 import flash.external.ExternalInterface;
@@ -28,5 +30,17 @@ class Utils
 		}
 		
 		return null;
+	}
+	
+	public static function GetSnakeGrid(x: Int, y: Int): SnakeNode {	
+		var result: SnakeNode = null;
+		
+		for (grid in GameScreen.gameGrid) {
+			if (grid.id.Equals(x, y)) {
+				result = grid;
+			}
+		}
+		
+		return result;
 	}
 }

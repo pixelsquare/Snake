@@ -1,17 +1,23 @@
 package snake.screens;
 
 import flambe.asset.AssetPack;
+import flambe.math.Rectangle;
 import flambe.scene.Director;
 import flambe.animation.Ease;
 import flambe.scene.SlideTransition;
 import flambe.subsystem.StorageSystem;
 import flambe.display.Texture;
 import snake.utils.AssetName;
+import flambe.System;
+import flambe.math.FMath;
+import flambe.display.Sprite;
+import flambe.display.FillSprite;
 
 import snake.screens.TitleScreen;
 import snake.screens.ChooseYourLevelScreen;
 import snake.screens.GameScreen;
 import snake.pxlSq.GameOverScreen;
+import snake.pxlSq.Utils;
 
 /**
  * ...
@@ -26,7 +32,7 @@ class SceneManager
 	
 	public var gameStorage(default, null): StorageSystem;
 	
-	public var gameScore(default, null): Int;
+	public var gameScore(default, default): Int;
 	
 	public var buttonDefaultTexture(default, null): Texture;
 	public var buttonHoverTexture(default, null): Texture;
@@ -37,6 +43,8 @@ class SceneManager
 	public var gameGameScreen(default, null): GameScreen;
 	public var gameGameOverScreen(default, null): GameOverScreen;
 	public var gameDelayScreen(default, null): GameDelayScreen;
+	
+	public var snake: Snake;
 	
 	public static inline var GAME_DELAY = 3;
 	
@@ -57,6 +65,26 @@ class SceneManager
 		gameGameScreen = new GameScreen();
 		gameGameOverScreen = new GameOverScreen();
 		gameDelayScreen = new GameDelayScreen();
+		
+		System.stage.resize.connect(function() {
+			var targetWidth: Int = 1136;
+			var targetHeight: Int = 640;
+			
+			var scale = FMath.min(System.stage.width / targetWidth, System.stage.height / targetHeight);
+			if (scale > 1) scale = 1;
+			
+			gameGameScreen.screenScene.get(FillSprite).setScale(scale).setXY(
+				(System.stage.width - targetWidth * scale) / 2, 
+				(System.stage.height - targetHeight * scale) / 2
+			);
+			
+			gameGameScreen.screenScene.get(Sprite).setScale(scale).setXY(
+				(System.stage.width - targetWidth * scale) / 2, 
+				(System.stage.height - targetHeight * scale) / 2
+			);
+			
+			gameGameScreen.screenScene.get(Sprite).scissor = new Rectangle(0, 0, targetWidth, targetHeight);
+		});
 	}
 	
 	public function ShowTitleScreen(animate: Bool): Void {

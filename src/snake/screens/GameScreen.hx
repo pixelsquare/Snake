@@ -19,9 +19,10 @@ import flambe.display.TextSprite;
 import flambe.display.Font;
 import flambe.Disposer;
 import flambe.input.Key;
+import snake.utils.AssetName;
 
 import snake.GridID;
-import snake.SnakeGrid;
+import snake.SnakeNode;
 
 import snake.screens.SceneManager;
 import snake.screens.IScreen;
@@ -31,45 +32,25 @@ import snake.pxlSq.Utils;
  * ...
  * @author Anthony Ganzon
  */
-enum SnakeDirection {
-	Right;
-	Left;
-	Up;
-	Down;
-}
- 
 class GameScreen extends Component implements IScreen
 {
 	public var screenName(default, null): String = "Game Screen";
 	public var screenScene(default, null): Entity;
 	public var screenDisposer(default, null): Disposer;
 	
+	public var snake(default, null): Snake;
+	
 	private var sceneManager: SceneManager;
-	private var gameGrid: Array<SnakeGrid>;
-	private var blockedGrids = [ { x:0, y:0 }, { x:1, y:0 }, { x:2, y:0 }, { x:3, y:0 }, { x:4, y:0 }, 
-								 { x:6, y:0 }, { x:7, y:0 }, { x:8, y:0 }, { x:9, y:0 }, { x:10, y:0 },
-								 { x:10, y:0 }, { x:10, y:1 }, { x:10, y:2 }, { x:10, y:3 }, { x:10, y:4 }, 
-								 { x:10, y:6 }, { x:10, y:7 }, { x:10, y:8 }, { x:10, y:9 }, { x:10, y:10 },
-								 { x:0, y:10 }, { x:1, y:10 }, { x:2, y:10 }, { x:3, y:10 }, { x:4, y:10 }, 
-								 { x:6, y:10 }, { x:7, y:10 }, { x:8, y:10 }, { x:9, y:10 }, { x:10, y:10 },
-								 { x:0, y:0 }, { x:0, y:1 }, { x:0, y:2 }, { x:0, y:3 }, { x:0, y:4 }, 
-								 { x:0, y:6 }, { x:0, y:7 }, { x:0, y:8 }, { x:0, y:9 }, { x:0, y:10 },
-								];
+	private var openGrids = 	[ { x:17, y:0 }, { x:0, y:17 }, { x:35, y:17 }, { x:17, y:35 } ];
 	
-	//private var passableGrids = [ { x:5, y: -1 }, { x:5, y: 11 }, { x: -1, y:5 }, { x:11, y:5 } ];
+	private var scoreText: TextSprite;
+	private var scoreNumText: TextSprite;							
 	
-	private var snakeHead: SnakeGrid;
-	private var snakeTail: SnakeGrid;
-	private var snakeBody: Array<SnakeGrid>;
+	public static var gameGrid: Array<SnakeNode>;
 	
-	private var snakeDirection: SnakeDirection;
-	
-	private static inline var SNAKE_LENGTH = 5;
-	private static inline var SNAKE_COLOR = 0xFFDF32;
-								
-	private static inline var GRID_ROWS = 11;
-	private static inline var GRID_COLUMNS = 11;
-	private static inline var GRID_SPACING = 40;
+	public static inline var GRID_ROWS = 35;
+	public static inline var GRID_COLUMNS = 35;
+	public static inline var GRID_SPACING = 12;
 	
 	public function new () { }
 	
@@ -82,179 +63,110 @@ class GameScreen extends Component implements IScreen
 		var background: FillSprite = new FillSprite(0x000000, System.stage.width, System.stage.height);
 		screenScene.addChild(new Entity().add(background));
 		
-		InitializeGame();
+		var scoreFont: Font = new Font(manager.gameAssets, AssetName.FONT_ARIAL_32);
+		scoreText = new TextSprite(scoreFont, "SCORE");
+		scoreText.centerAnchor();
+		scoreText.setXY(
+			System.stage.width * 0.875,
+			System.stage.height * 0.4
+		);
+		screenScene.addChild(new Entity().add(scoreText));
 		
-		//System.pointer.down.connect(function(event: PointerEvent) {
-			//manager.ShowGameDelayScreen(false);
+		var scoreNumFont:Font = new Font(manager.gameAssets, AssetName.FONT_ARIAL_32);
+		scoreNumText = new TextSprite(scoreNumFont, "");
+		scoreNumText.setXY(
+			scoreText.x._ - (scoreNumText.getNaturalWidth() / 2),
+			scoreText.y._ + (scoreNumText.getNaturalHeight() / 2)
+		);
+		screenScene.addChild(new Entity().add(scoreNumText));
+		
+		CreateGameWorld();
+		SetScoreTextDirty();
+		
+		//System.keyboard.down.connect(function(event: KeyboardEvent) {
+			//if (event.key == Key.B) {
+				//AddScore();
+			//}
 		//});
 		
 		return screenScene;
 	}
 	
-	public function InitializeGame(): Void {	
-		gameGrid = new Array<SnakeGrid>();
-		for (ii in 0...GRID_ROWS) {
-			for(jj in 0...GRID_COLUMNS) {
-				var snakeGrid: SnakeGrid = new SnakeGrid();
+	public function CreateGameWorld(): Void {		
+		gameGrid = new Array<SnakeNode>();
+		for(ii in 0...GRID_COLUMNS) {
+			for (jj in 0...GRID_ROWS) {
+				var snakeGrid: SnakeNode = new SnakeNode();
 				snakeGrid.Initialize();
-				snakeGrid.SetID(ii, jj);
-				snakeGrid.SetXY(ii * GRID_SPACING, jj * GRID_SPACING);
+				snakeGrid.SetID(jj, ii);
+				
+				var totalWidth: Float = snakeGrid.width._ * GRID_ROWS;
+				var totalHeight: Float = snakeGrid.height._ * GRID_COLUMNS;
+				
+				snakeGrid.SetXY(
+					(System.stage.width * 0.4 - (totalWidth / 2)) + jj * GRID_SPACING,
+					(System.stage.height * 0.45 - (totalHeight / 2)) + ii * GRID_SPACING
+				);
+				
 				screenScene.addChild(new Entity().add(snakeGrid));
 				gameGrid.push(snakeGrid);
 			}
 		}
 		
-		for (ii in 0...blockedGrids.length) {
-			var snakeGrid = GetSnakeGrid(blockedGrids[ii].x, blockedGrids[ii].y);
-			if (snakeGrid == null) { 
-				continue; 			
+		for (ii in 0...GRID_ROWS) {
+			if (ii == ((GRID_ROWS -1) / 2)) {
+				continue;
 			}
-			snakeGrid.SetIsBlocked(true);
+			gameGrid[ii].SetIsBlocked(true);
+			
+			var leftIndx: Int = ii * GRID_ROWS;
+			gameGrid[leftIndx].SetIsBlocked(true);
+			
+			var rightIndx: Int = ii * GRID_ROWS + (GRID_ROWS - 1);
+			gameGrid[rightIndx].SetIsBlocked(true);
+			
+			var bottomIndx: Int = ((GRID_ROWS * GRID_COLUMNS) - GRID_ROWS) + ii;
+			gameGrid[bottomIndx].SetIsBlocked(true);
 		}
 		
-		snakeBody = new Array<SnakeGrid>();
-		var ii: Int = SNAKE_LENGTH;
-		while (ii > 0) {
-			var body: SnakeGrid = GetSnakeGrid(ii, 1);
-			body.SetIsBlocked(true, SNAKE_COLOR);
-			snakeBody.push(body);
-			ii--;
-		}
-		
-		snakeHead = snakeBody[0];
-		snakeTail = snakeBody[snakeBody.length - 1];
-		snakeDirection = SnakeDirection.Right;
-		
-		var script: Script = new Script();
-		script.run(new Repeat(
-			new Sequence([
-				new CallFunction(function() {
-					SnakeMove(snakeDirection);
-				}),
-				new Delay(0.5)
-			])
-		));
-		
-		screenScene.add(script);
-		
-		System.keyboard.down.connect(function(event: KeyboardEvent) {
-			if (event.key == Key.Right) {
-				snakeDirection = SnakeDirection.Right;
-			}
-			
-			if (event.key == Key.Left) {
-				snakeDirection = SnakeDirection.Left;
-			}
-			
-			if (event.key == Key.Up) {
-				snakeDirection = SnakeDirection.Up;
-			}
-			
-			if (event.key == Key.Down) {
-				snakeDirection = SnakeDirection.Down;
-			}
-			
-			if (event.key == Key.Space) {
-				AddSnake();
-			}
-		});
+		//Utils.ConsoleLog(gameGrid.length + "");
 	}
 	
-	public function SnakeMove(direction: SnakeDirection): Void {	
-		var nextGridID: GridID = GetSnakeNextGridID(direction);
-		//Utils.ConsoleLog(nextGridID.ToString() + " " + snakeHead.id.ToString());
-		var nextGrid = GetSnakeGrid(nextGridID.x, nextGridID.y);
-		if (nextGrid.isBlocked) {
-			Utils.ConsoleLog("BLOCKED!");
-			
-			var worldSpeed = new SpeedAdjuster(0.5);
-			screenScene.add(worldSpeed);
-			
-			var script = new Script();
-			script.run(new Sequence([
-				new AnimateTo(worldSpeed.scale, 0, 1.5),
-				new CallFunction(function() {
-					sceneManager.ShowGameOverScreen(false);
-					//Utils.ConsoleLog("ASD");
-					
-				})
-			]));
-			
-			screenScene.add(script);
-			return;
+	public function InitializeSnake(id: Int): Void {
+		snake = new snake.Snake();
+		snake.onCollide = function() {
+			Utils.ConsoleLog("Game Over!");
+			sceneManager.ShowGameOverScreen(false);
+		};
+		
+		screenScene.add(snake);
+		
+		if (id == 0) {
+			snake.SetSpeed(0.5);
+		}
+		else if (id == 1) {
+			snake.SetSpeed(0.25);
+		}
+		else if (id == 2) {
+			snake.SetSpeed(0.1);
 		}
 		
-		snakeTail.SetIsBlocked(false);
-		snakeBody.remove(snakeTail);
-		snakeTail = snakeBody[snakeBody.length - 1];
-		
-		nextGrid.SetIsBlocked(true, SNAKE_COLOR);
-		snakeBody.insert(0, nextGrid);
-		snakeHead = nextGrid;
-		
+		snake.Initialize();
 	}
 	
-	public function GetSnakeNextGridID(direction: SnakeDirection): GridID {
-		var result: GridID = new GridID(snakeHead.id.x, snakeHead.id.y);
-		
-		if (direction == SnakeDirection.Right) {
-			result.x++;
-			
-			if (result.x == GRID_ROWS) {
-				result.x = 0;
-			}
-		}
-		
-		if (direction == SnakeDirection.Left) {
-			result.x--;
-			
-			if (result.x == -1) {
-				result.x = GRID_ROWS - 1;
-			}
-		}
-		
-		if (direction == SnakeDirection.Up) {
-			result.y--;
-			
-			if (result.y == -1) {
-				result.y = GRID_COLUMNS - 1;
-			}
-		}
-		
-		if (direction == SnakeDirection.Down) {
-			result.y++;
-			
-			if (result.y == GRID_COLUMNS) {
-				result.y = 0;
-			}
-		}
-		
-		return result;
+	public function AddScore(amt: Int = 1): Void {
+		sceneManager.gameScore++;
+		SetScoreTextDirty();
 	}
 	
-	public function AddSnake(): Void {
-		var prevGrid: SnakeGrid = GetSnakeGrid(snakeTail.id.x - 1, snakeTail.id.y);
-		if (prevGrid.isBlocked) {
-			prevGrid = GetSnakeGrid(snakeTail.id.x, snakeTail.id.y + 1);
-		}
-		
-		prevGrid.SetIsBlocked(true, SNAKE_COLOR);
-		snakeBody.push(prevGrid);
-		snakeTail = prevGrid;
+	public function SetScoreTextDirty(): Void {
+		scoreNumText.text = sceneManager.gameScore + "";
+		scoreNumText.setXY(
+			scoreText.x._ - (scoreNumText.getNaturalWidth() / 2),
+			scoreText.y._ + (scoreNumText.getNaturalHeight() / 2)
+		);
 	}
 	
-	public function GetSnakeGrid(x: Int, y: Int): SnakeGrid {	
-		var result: SnakeGrid = null;
-		
-		for (grid in gameGrid) {
-			if (grid.id.Equals(x, y)) {
-				result = grid;
-			}
-		}
-		
-		return result;
-	}
-
 	override public function onAdded() 
 	{
 		super.onAdded();
@@ -269,11 +181,6 @@ class GameScreen extends Component implements IScreen
 	{
 		super.onRemoved();
 		Utils.ConsoleLog(screenName + " REMOVED!");
-	}
-	
-	override public function onUpdate(dt:Float) 
-	{
-		super.onUpdate(dt);
 	}
 	
 	override public function dispose() 

@@ -66,6 +66,7 @@ class ChooseYourLevelScreen extends Component implements IScreen
 				levelBG.texture = manager.buttonDefaultTexture;
 				manager.ShowGameScreen(false);
 				manager.ShowGameDelayScreen(false);
+				manager.gameGameScreen.InitializeSnake(ii);			
 			}));
 			
 			levelEntity.add(levelBG);
@@ -93,7 +94,7 @@ class ChooseYourLevelScreen extends Component implements IScreen
 		
 		return screenScene;
 	}
-	
+		
 	override public function onAdded() 
 	{
 		super.onAdded();

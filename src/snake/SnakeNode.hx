@@ -5,6 +5,7 @@ import flambe.Entity;
 import flambe.animation.AnimatedFloat;
 import flambe.System;
 import flambe.math.Point;
+import snake.Snake.SnakeDirection;
 
 import snake.pxlSq.Utils;
 
@@ -12,9 +13,8 @@ import snake.pxlSq.Utils;
  * ...
  * @author Anthony Ganzon
  */
-class SnakeGrid extends Component
+class SnakeNode extends Component
 {
-
 	public var color: Int;
 	public var id(default, null): GridID;
 	public var x(default, null): AnimatedFloat;
@@ -22,6 +22,9 @@ class SnakeGrid extends Component
 	public var width(default, null): AnimatedFloat;
 	public var height(default, null): AnimatedFloat;
 	public var isBlocked(default, null): Bool;
+	
+	public var oldDirection(default, null): GridID;
+	public var newDirection(default, null): GridID;
 	
 	private var gridEntity: Entity;
 	private var background: FillSprite;
@@ -36,6 +39,8 @@ class SnakeGrid extends Component
 		width = new AnimatedFloat(0);
 		height = new AnimatedFloat(0);
 		isBlocked = false;
+		oldDirection = new GridID(0, 0);
+		newDirection = new GridID(0, 0);
 	}
 	
 	public function Initialize(): Void {
@@ -44,7 +49,7 @@ class SnakeGrid extends Component
 		background = new FillSprite(0xFFFFFF, 0, 0);
 		SetColor(0xFFFFFF);
 		SetXY(0, 0);
-		SetSize(System.stage.width * 0.05, System.stage.height * 0.05);
+		SetSize(System.stage.width * 0.018, System.stage.height * 0.022);
 		gridEntity.addChild(new Entity().add(background));
 	}
 	
@@ -79,6 +84,15 @@ class SnakeGrid extends Component
 		background.setXY(x._, y._);
 		background.setSize(width._, height._);
 		background.color = color;
+	}
+	
+	public function SetOldDirection(direction: GridID): Void {
+		oldDirection = direction;
+	}
+	
+	public function SetNewDirection(direction: GridID): Void {
+		SetOldDirection(newDirection);
+		newDirection = direction;
 	}
 	
 	override public function onAdded() 
