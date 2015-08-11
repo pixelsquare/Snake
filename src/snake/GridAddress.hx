@@ -4,9 +4,8 @@ package snake;
  * ...
  * @author Anthony Ganzon
  */
-class GridID
+class GridAddress
 {
-
 	public var x(default, default): Int;
 	public var y(default, default): Int;
 	

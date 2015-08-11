@@ -3,8 +3,12 @@ package snake.utils;
 /**
  * ...
  * @author Anthony Ganzon
+ * 
+ * 	<Summary>
+ * 		Used keys for data storage.
+ * 	</Summary>
  */
 class DataName
 {
-	public inline var GAME_SCORE: String = "game_score";
+	public static inline var GAME_SCORE: String = "game_score";
 }

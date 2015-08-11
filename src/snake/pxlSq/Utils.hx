@@ -1,8 +1,10 @@
 package snake.pxlSq;
 
 import haxe.xml.Fast;
-import snake.SnakeNode;
+import snake.GridAddress;
 import snake.screens.GameScreen;
+import snake.SnakeGame.SnakeDirection;
+import snake.SnakeNode;
 
 #if flash
 import flash.external.ExternalInterface;
@@ -32,13 +34,32 @@ class Utils
 		return null;
 	}
 	
-	public static function GetSnakeGrid(x: Int, y: Int): SnakeNode {	
+	public static function GetGridNode(x: Int, y: Int): SnakeNode {	
 		var result: SnakeNode = null;
 		
 		for (grid in GameScreen.gameGrid) {
-			if (grid.id.Equals(x, y)) {
+			if (grid.gridAddress.Equals(x, y)) {
 				result = grid;
 			}
+		}
+		
+		return result;
+	}
+	
+	public static function GetGridDirection(direction: SnakeDirection): GridAddress {
+		var result: GridAddress = new GridAddress(0, 0);
+		
+		if (direction == SnakeDirection.Right) {
+			result.SetXY(1, 0);
+		}
+		else if (direction == SnakeDirection.Left) {
+			result.SetXY(-1, 0);
+		}
+		else if (direction == SnakeDirection.Up) {
+			result.SetXY(0,  1);
+		}
+		else if (direction == SnakeDirection.Down) {
+			result.SetXY(0, -1);
 		}
 		
 		return result;

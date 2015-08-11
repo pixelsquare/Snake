@@ -1,20 +1,24 @@
 package snake.screens;
 
+import flambe.asset.AssetPack;
 import flambe.Component;
 import flambe.display.FillSprite;
 import flambe.display.Font;
 import flambe.display.ImageSprite;
-import flambe.display.Sprite;
 import flambe.display.TextSprite;
-import flambe.display.Texture;
+import flambe.Disposer;
 import flambe.Entity;
 import flambe.input.PointerEvent;
+import flambe.scene.Scene;
 import flambe.System;
-import flambe.Disposer;
-import snake.utils.AssetName;
 
-import snake.screens.SceneManager;
+import snake.core.GameManager;
+import snake.core.SceneManager;
+import snake.pxlSq.Utils;
 import snake.screens.IScreen;
+import snake.utils.AssetName;
+import snake.utils.ScreenName;
+
 import snake.pxlSq.Utils;
 
 /**
@@ -23,55 +27,61 @@ import snake.pxlSq.Utils;
  */
 class ChooseYourLevelScreen extends Component implements IScreen
 {
-	public var screenName(default, null): String = "Choose your level Screen";
-	public var screenScene(default, null): Entity;
-	public var screenDisposer(default, null): Disposer;
+	public var screenBackground		(default, null): FillSprite;
+	public var screenScene			(default, null): Scene;
+	public var screenEntity			(default, null): Entity;
+	public var screenDisposer		(default, null): Disposer;
 	
 	public function new () { }
 	
-	public function Initialize(manager: SceneManager): Entity {
-		screenScene = new Entity();
-		screenScene.add(this);
+	public function ScreenEntity(): Entity {
+		screenScene = new Scene();
+		screenEntity = new Entity();
 		
-		var background: FillSprite = new FillSprite(0x202020, System.stage.width, System.stage.height);
-		screenScene.addChild(new Entity().add(background));
+		screenEntity.add(this);
+		screenEntity.add(screenScene);
 		
-		var chooseYourLevelFont: Font = new Font(manager.gameAssets, AssetName.FONT_ARIAL_32);
+		var gameAssets: AssetPack = GameManager.current.gameAssets;
+		
+		screenBackground = new FillSprite(SceneManager.SCENE_DEFAULT_BG, System.stage.width, System.stage.height);
+		screenEntity.addChild(new Entity().add(screenBackground));
+		
+		var chooseYourLevelFont: Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
 		var chooseYourLevelText: TextSprite = new TextSprite(chooseYourLevelFont, "Choose your level");
 		chooseYourLevelText.centerAnchor();
 		chooseYourLevelText.setXY(
 			System.stage.width / 2,
 			System.stage.height * 0.3
 		);
-		screenScene.addChild(new Entity().add(chooseYourLevelText));
+		screenEntity.addChild(new Entity().add(chooseYourLevelText));
 		
 		for (ii in 0...3) {
 			var levelEntity: Entity = new Entity();
-			var levelBG: ImageSprite = new ImageSprite(manager.buttonDefaultTexture);
+			var levelBG: ImageSprite = new ImageSprite(GameManager.current.buttonDefaultTexture);
 			levelBG.centerAnchor();
 			
 			screenDisposer.add(levelBG.pointerIn.connect(function(event: PointerEvent) {
-				levelBG.texture = manager.buttonHoverTexture;
+				levelBG.texture = GameManager.current.buttonHoverTexture;
 			}));
 			
 			screenDisposer.add(levelBG.pointerOut.connect(function(event: PointerEvent) {
-				levelBG.texture = manager.buttonDefaultTexture;
+				levelBG.texture = GameManager.current.buttonDefaultTexture;
 			}));
 			
 			screenDisposer.add(levelBG.pointerDown.connect(function(event: PointerEvent) {
-				levelBG.texture = manager.buttonActiveTexture;
+				levelBG.texture = GameManager.current.buttonActiveTexture;
 			}));
 			
 			screenDisposer.add(levelBG.pointerUp.connect(function(event: PointerEvent) {
-				levelBG.texture = manager.buttonDefaultTexture;
-				manager.ShowGameScreen(false);
-				manager.ShowGameDelayScreen(false);
-				manager.gameGameScreen.InitializeSnake(ii);			
+				levelBG.texture = GameManager.current.buttonDefaultTexture;
+				SceneManager.current.ShowGameScreen(false);
+				SceneManager.current.ShowGameDelayScreen(false);
+				SceneManager.current.gameGameScreen.InitializeSnake(ii);		
 			}));
 			
 			levelEntity.add(levelBG);
 			
-			var levelFont: Font = new Font(manager.gameAssets, AssetName.FONT_APPLE_GARAMOND_32);
+			var levelFont: Font = new Font(gameAssets, AssetName.FONT_APPLE_GARAMOND_32);
 			var levelText: TextSprite = new TextSprite(levelFont, "Level " + (ii + 1));
 			levelText.centerAnchor();
 			
@@ -89,16 +99,27 @@ class ChooseYourLevelScreen extends Component implements IScreen
 			
 			levelEntity.addChild(new Entity().add(levelText));
 			
-			screenScene.addChild(levelEntity);
+			screenEntity.addChild(levelEntity);
 		}
 		
-		return screenScene;
+		screenDisposer.add(screenEntity);
+		screenDisposer.add(screenScene);
+		
+		return screenEntity;
+	}
+	
+	public function SetBackgroundColor(color: Int): Void {
+		screenBackground.color = color;
+	}
+	
+	public function GetScreenName(): String {
+		return ScreenName.SCREEN_CHOOSE_YOUR_LEVEL;
 	}
 		
 	override public function onAdded() 
 	{
 		super.onAdded();
-		Utils.ConsoleLog(screenName + " ADDED!");
+		Utils.ConsoleLog(GetScreenName() + " ADDED!");
 		screenDisposer = owner.get(Disposer);
 		if (screenDisposer == null) {
 			owner.add(screenDisposer = new Disposer());
@@ -108,13 +129,13 @@ class ChooseYourLevelScreen extends Component implements IScreen
 	override public function onRemoved() 
 	{
 		super.onRemoved();
-		Utils.ConsoleLog(screenName + " REMOVED!");
+		Utils.ConsoleLog(GetScreenName() + " REMOVED!");
 	}
 	
 	override public function dispose() 
 	{
 		super.dispose();
-		Utils.ConsoleLog(screenName + " DISPOSED!");
+		Utils.ConsoleLog(GetScreenName() + " DISPOSED!");
 		screenDisposer.dispose();
 	}
 }

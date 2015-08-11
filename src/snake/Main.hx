@@ -1,15 +1,13 @@
 package snake;
 
+import flambe.asset.AssetPack;
+import flambe.asset.Manifest;
 import flambe.Entity;
 import flambe.scene.Director;
 import flambe.System;
-import flambe.asset.AssetPack;
-import flambe.asset.Manifest;
-import flambe.display.FillSprite;
-import flambe.display.ImageSprite;
-import flambe.util.Promise;
+import snake.core.GameManager;
+import snake.core.SceneManager;
 import snake.screens.PreloaderScene;
-import snake.screens.SceneManager;
 
 import snake.pxlSq.Utils;
 
@@ -37,9 +35,18 @@ class Main
 			var preloader: Entity = PreloaderScene.Initialize(pack, loader);
 			director.unwindToScene(preloader);
 			
-			var sceneManager: SceneManager = new SceneManager();
-			sceneManager.Initialize(pack, director, storage);
-			sceneManager.ShowChooseYourLevelScreen(false);
+			var gameManager: GameManager = new GameManager();
+			gameManager.SetGameAssets(pack);
+			gameManager.SetGameDirector(director);
+			gameManager.SetGameStorage(storage);
+			gameManager.Initialize();
+			
+			var sceneManager: SceneManager = gameManager;
+			sceneManager.ShowTitleScreen(false);
+			
+			//var sceneManager: SceneManager = new SceneManager();
+			//sceneManager.Initialize(pack, director, storage);
+			//sceneManager.ShowChooseYourLevelScreen(false);
 		});
 		
         //loader.get(onSuccess);

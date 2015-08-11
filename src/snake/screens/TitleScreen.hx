@@ -5,15 +5,21 @@ import flambe.Component;
 import flambe.display.FillSprite;
 import flambe.display.Font;
 import flambe.display.TextSprite;
-import flambe.Entity;
-import flambe.input.PointerEvent;
-import flambe.System;
-import flambe.util.SignalConnection;
 import flambe.Disposer;
-import snake.utils.AssetName;
+import flambe.Entity;
+import flambe.input.Key;
+import flambe.input.KeyboardEvent;
+import flambe.input.PointerEvent;
+import flambe.scene.Scene;
+import flambe.System;
 
-import snake.screens.SceneManager;
+import snake.core.GameManager;
+import snake.core.SceneManager;
+import snake.pxlSq.Utils;
 import snake.screens.IScreen;
+import snake.utils.AssetName;
+import snake.utils.ScreenName;
+
 import snake.pxlSq.Utils;
 
 /**
@@ -22,69 +28,107 @@ import snake.pxlSq.Utils;
  */
 class TitleScreen extends Component implements IScreen
 {	
-	public var screenName(default, null): String = "Title Screen";
-	public var screenScene(default, null): Entity;
-	public var screenDisposer(default, null): Disposer;
+	public var screenBackground	(default, null): FillSprite;
+	public var screenScene		(default, null): Scene;
+	public var screenEntity		(default, null): Entity;
+	public var screenDisposer	(default, null): Disposer;
+	
+	private var highScoreText: 	TextSprite;
+	private var scoreText: 		TextSprite;
 	
 	public function new () { }
 	
-	public function Initialize(manager: SceneManager): Entity {
-		screenScene = new Entity();
-		screenScene.add(this);
+	public function ScreenEntity(): Entity {
+		screenScene = new Scene();
+		screenEntity = new Entity();
 		
-		var background: FillSprite = new FillSprite(0x202020, System.stage.width, System.stage.height);	
-		screenScene.addChild(new Entity().add(background));
+		screenEntity.add(this);
+		screenEntity.add(screenScene);
+		
+		var gameAssets: AssetPack = GameManager.current.gameAssets;
+		
+		screenBackground = new FillSprite(SceneManager.SCENE_DEFAULT_BG, System.stage.width, System.stage.height);	
+		screenEntity.addChild(new Entity().add(screenBackground));
 		
 		// Title text
-		var titleFont: Font = new Font(manager.gameAssets, AssetName.FONT_ARIAL_32);
+		var titleFont: Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
 		var titleText: TextSprite = new TextSprite(titleFont, "SNaKE");
 		titleText.centerAnchor();
 		titleText.setXY(
 			System.stage.width / 2,
 			System.stage.height * 0.4
 		);
-		screenScene.addChild(new Entity().add(titleText));
+		screenEntity.addChild(new Entity().add(titleText));
 		
 		// Click anywhere to start text
-		var clickToStartFont: Font = new Font(manager.gameAssets, AssetName.FONT_ARIAL_32);
+		var clickToStartFont: Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
 		var clickToStartText: TextSprite = new TextSprite(clickToStartFont, "Click anywhere to Start!");
 		clickToStartText.centerAnchor();
 		clickToStartText.setXY(
 			System.stage.width / 2,
 			System.stage.height * 0.6
 		);
-		screenScene.addChild(new Entity().add(clickToStartText));
+		screenEntity.addChild(new Entity().add(clickToStartText));
 		
 		// Highscore text
-		var highScoreFont: Font = new Font(manager.gameAssets, AssetName.FONT_ARIAL_32);
-		var highScoreText: TextSprite = new TextSprite(highScoreFont, "High Score");
+		var highScoreFont: Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
+		highScoreText = new TextSprite(highScoreFont, "High Score");
 		highScoreText.centerAnchor();
 		highScoreText.setXY(
 			System.stage.width / 2,
 			System.stage.height * 0.8
 		);
-		screenScene.addChild(new Entity().add(highScoreText));
+		screenEntity.addChild(new Entity().add(highScoreText));
 		
 		// Score Text
-		var scoreFont: Font = new Font(manager.gameAssets, AssetName.FONT_ARIAL_32);
-		var scoreText: TextSprite = new TextSprite(scoreFont, "00000");
+		var scoreFont: Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
+		scoreText = new TextSprite(scoreFont, "00000");
 		scoreText.setXY(
 			highScoreText.x._ - (scoreText.getNaturalWidth() / 2),
 			highScoreText.y._ + (scoreText.getNaturalHeight() / 2)
 		);
-		screenScene.addChild(new Entity().add(scoreText));
+		screenEntity.addChild(new Entity().add(scoreText));
 		
+		// Manually dispose pointer event
 		screenDisposer.add(System.pointer.down.connect(function(event: PointerEvent) {
-			manager.ShowChooseYourLevelScreen(true);
+			SceneManager.current.ShowChooseYourLevelScreen(true);
 		}));
 		
-		return screenScene;
+		screenDisposer.add(System.keyboard.down.connect(function(event: KeyboardEvent) {
+			if (event.key == Key.R) {
+				GameManager.current.ResetHighestScore();
+				SetHighScoreDirty();
+			}
+		}));
+		
+		SetHighScoreDirty();
+		
+		screenDisposer.add(screenEntity);
+		screenDisposer.add(screenScene);
+		
+		return screenEntity;
+	}
+	
+	public function SetHighScoreDirty(): Void {
+		scoreText.text = GameManager.current.gameHighScore + "";
+		scoreText.setXY(
+			highScoreText.x._ - (scoreText.getNaturalWidth() / 2),
+			highScoreText.y._ + (scoreText.getNaturalHeight() / 2)
+		);
+	}
+	
+	public function SetBackgroundColor(color: Int): Void {
+		screenBackground.color = color;
+	}
+	
+	public function GetScreenName(): String {
+		return ScreenName.SCREEN_TITLE;
 	}
 	
 	override public function onAdded() 
 	{
 		super.onAdded();
-		Utils.ConsoleLog(screenName + " ADDED!");
+		Utils.ConsoleLog(GetScreenName() + " ADDED!");
 		screenDisposer = owner.get(Disposer);
 		if (screenDisposer == null) {
 			owner.add(screenDisposer = new Disposer());
@@ -94,13 +138,13 @@ class TitleScreen extends Component implements IScreen
 	override public function onRemoved() 
 	{
 		super.onRemoved();
-		Utils.ConsoleLog(screenName + " REMOVED!");
+		Utils.ConsoleLog(GetScreenName() + " REMOVED!");
 	}
 	
 	override public function dispose() 
 	{
 		super.dispose();
-		Utils.ConsoleLog(screenName + " DISPOSED!");
+		Utils.ConsoleLog(GetScreenName() + " DISPOSED!");
 		screenDisposer.dispose();
 	}
 }

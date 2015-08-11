@@ -1,22 +1,27 @@
 package snake.screens;
 
+import flambe.asset.AssetPack;
 import flambe.Component;
 import flambe.display.FillSprite;
 import flambe.display.Font;
 import flambe.display.TextSprite;
+import flambe.Disposer;
 import flambe.Entity;
+import flambe.scene.Director;
 import flambe.scene.Scene;
-import flambe.script.AnimateTo;
 import flambe.script.CallFunction;
 import flambe.script.Delay;
 import flambe.script.Repeat;
 import flambe.script.Script;
 import flambe.script.Sequence;
 import flambe.System;
-import flambe.Disposer;
-import haxe.Timer;
 
+import snake.core.GameManager;
+import snake.core.SceneManager;
+import snake.pxlSq.Utils;
 import snake.utils.AssetName;
+import snake.utils.ScreenName;
+
 import snake.pxlSq.Utils;
 
 /**
@@ -25,34 +30,40 @@ import snake.pxlSq.Utils;
  */
 class GameDelayScreen extends Component implements IScreen
 {
-	public var screenName(default, null): String = "Game Delay Screen";
-	public var screenScene(default, null): Entity;
-	public var screenDisposer(default, null): Disposer;
+	public var screenBackground		(default, null): FillSprite;
+	public var screenScene			(default, null): Scene;
+	public var screenEntity			(default, null): Entity;
+	public var screenDisposer		(default, null): Disposer;
 	
-	private var time: Float;
-	
-	private static inline var COUNTDOWN_BLOAT_SIZE = 3;
+	private static inline var COUNTDOWN_BLOAT_SIZE: Int = 3;
 	
 	public function new () { }
 	
-	public function Initialize(manager: SceneManager): Entity {
-		screenScene = new Entity();
-		screenScene.add(new Scene(false));
+	public function ScreenEntity(): Entity {
+		screenScene = new Scene(false);
+		screenEntity = new Entity();
 		
-		var background: FillSprite = new FillSprite(0x000000, System.stage.width, System.stage.height);
-		background.alpha.animate(0, 0.5, 0.5);
-		screenScene.addChild(new Entity().add(background));
+		screenEntity.add(this);
+		screenEntity.add(screenScene);
 		
-		var gameStartingInFont: Font = new Font(manager.gameAssets, AssetName.FONT_ARIAL_32);
+		var gameAssets: AssetPack = GameManager.current.gameAssets;
+		var gameDirector: Director = GameManager.current.gameDirector;
+		
+		// Create Background
+		screenBackground = new FillSprite(SceneManager.SCENE_DEFAULT_BG, System.stage.width, System.stage.height);
+		screenBackground.alpha.animate(0, 0.5, 0.5);
+		screenEntity.addChild(new Entity().add(screenBackground));
+		
+		var gameStartingInFont: Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
 		var gameStartingInText: TextSprite = new TextSprite(gameStartingInFont, "Game starting in ...");
 		gameStartingInText.centerAnchor();
 		gameStartingInText.setXY(
 			System.stage.width / 2,
 			System.stage.height * 0.4
 		);
-		screenScene.addChild(new Entity().add(gameStartingInText));
+		screenEntity.addChild(new Entity().add(gameStartingInText));
 		
-		var countdownFont: Font = new Font(manager.gameAssets, AssetName.FONT_ARIAL_32);
+		var countdownFont: Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
 		var countdownText: TextSprite = new TextSprite(countdownFont, "3");
 		countdownText.centerAnchor();
 		countdownText.setScale(COUNTDOWN_BLOAT_SIZE);
@@ -60,9 +71,9 @@ class GameDelayScreen extends Component implements IScreen
 			gameStartingInText.x._ - (countdownText.getNaturalWidth() / 2),
 			gameStartingInText.y._ + (gameStartingInText.getNaturalHeight() / 2) + (countdownText.getNaturalHeight() / 2)
 		);
-		screenScene.addChild(new Entity().add(countdownText));
+		screenEntity.addChild(new Entity().add(countdownText));
 		
-		var time = SceneManager.GAME_DELAY;
+		var time = SceneManager.GAME_WAITING_TIME;
 		var script: Script = new Script();
 		script.run(new Repeat(new Sequence([
 			new CallFunction(function() { 
@@ -75,7 +86,7 @@ class GameDelayScreen extends Component implements IScreen
 				if (time < 0) {
 					time = 0;
 					script.dispose();
-					manager.gameDirector.unwindToScene(manager.gameGameScreen.screenScene);
+					gameDirector.unwindToScene(SceneManager.current.gameGameScreen.screenEntity);
 				}
 				else {
 					countdownText.text = time + "";
@@ -84,15 +95,26 @@ class GameDelayScreen extends Component implements IScreen
 			})
 		])));
 		
-		screenScene.add(script);
+		screenEntity.add(script);
 		
-		return screenScene;
+		screenDisposer.add(screenEntity);
+		screenDisposer.add(screenScene);
+		
+		return screenEntity;
+	}
+	
+	public function SetBackgroundColor(color: Int): Void {
+		screenBackground.color = color;
+	}
+	
+	public function GetScreenName(): String {
+		return ScreenName.SCREEN_GAME_DELAY;
 	}
 	
 	override public function onAdded() 
 	{
 		super.onAdded();
-		Utils.ConsoleLog(screenName + " ADDED!");
+		Utils.ConsoleLog(GetScreenName() + " ADDED!");
 		screenDisposer = owner.get(Disposer);
 		if (screenDisposer == null) {
 			owner.add(screenDisposer = new Disposer());
@@ -102,13 +124,13 @@ class GameDelayScreen extends Component implements IScreen
 	override public function onRemoved() 
 	{
 		super.onRemoved();
-		Utils.ConsoleLog(screenName + " REMOVED!");
+		Utils.ConsoleLog(GetScreenName() + " REMOVED!");
 	}
 	
 	override public function dispose() 
 	{
 		super.dispose();
-		Utils.ConsoleLog(screenName + " DISPOSED!");
+		Utils.ConsoleLog(GetScreenName() + " DISPOSED!");
 		screenDisposer.dispose();
 	}
 }

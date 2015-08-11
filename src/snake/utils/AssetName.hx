@@ -3,6 +3,10 @@ package snake.utils;
 /**
  * ...
  * @author Anthony Ganzon
+ * 
+ * 	<Summary>
+ * 		Used to access asset directory.
+ * 	</Summary>
  */
 class AssetName
 {
