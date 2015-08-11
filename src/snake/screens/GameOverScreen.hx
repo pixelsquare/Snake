@@ -93,7 +93,6 @@ class GameOverScreen extends Component implements IScreen
 		
 		var highScoreNumFont: Font = new Font(gameAssets, AssetName.FONT_UNCERTAIN_SANS_32);
 		var highScoreNumText: TextSprite = new TextSprite(highScoreNumFont, GameManager.current.gameHighScore + "");
-		//highScoreNumText.centerAnchor();
 		highScoreNumText.setXY(
 			highScoreText.x._ - (highScoreNumText.getNaturalWidth() / 2),
 			highScoreText.y._ + (highScoreNumText.getNaturalHeight() / 2)
@@ -154,6 +153,7 @@ class GameOverScreen extends Component implements IScreen
 		
 		if(GameManager.current.HasBeatenHighestScore()) {
 			screenEntity.addChild(new Entity().add(highestScoreText));
+			highScoreNumText.text = GameManager.current.gameScore + "";
 		}
 		
 		SetScoreDirty();
