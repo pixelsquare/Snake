@@ -66,6 +66,14 @@ class GameScreen extends Component implements IScreen
 			System.stage.width * 0.85,
 			System.stage.height * 0.4
 		);
+		
+		#if android
+		scoreText.setXY(
+			System.stage.width * 0.5,
+			System.stage.height * 0.8
+		);
+		#end
+		
 		screenEntity.addChild(new Entity().add(scoreText));
 		
 		var scoreNumFont:Font = new Font(gameAssets, AssetName.FONT_UNCERTAIN_SANS_50);
@@ -103,6 +111,13 @@ class GameScreen extends Component implements IScreen
 					(System.stage.width * 0.375 - (totalWidth / 2)) + xx * GRID_SPACING,
 					(System.stage.height * 0.5 - (totalHeight / 2)) + yy * GRID_SPACING
 				);
+				
+				#if android
+				snakeGrid.SetXY(
+					(System.stage.width * 0.5 - (totalWidth / 2)) + xx * GRID_SPACING,
+					(System.stage.height * 0.5 - (totalHeight / 2)) + yy * GRID_SPACING
+				);
+				#end
 				
 				screenEntity.addChild(new Entity().add(snakeGrid));
 				gameGrid.push(snakeGrid);

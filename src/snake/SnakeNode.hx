@@ -72,6 +72,11 @@ class SnakeNode extends Component
 		x._ = 0;
 		y._ = 0;
 		width._ = (System.stage.width * 0.025) * 0.75;
+		
+		#if android
+		width._ = System.stage.width * 0.025;
+		#end
+		
 		height._ = System.stage.height * 0.025;
 		color = COLOR_DEFAULT;
 		

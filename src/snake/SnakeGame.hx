@@ -5,6 +5,8 @@ import flambe.Disposer;
 import flambe.Entity;
 import flambe.input.Key;
 import flambe.input.KeyboardEvent;
+import flambe.input.PointerEvent;
+import flambe.math.Point;
 import flambe.script.AnimateTo;
 import flambe.script.CallFunction;
 import flambe.script.Delay;
@@ -13,6 +15,7 @@ import flambe.script.Script;
 import flambe.script.Sequence;
 import flambe.SpeedAdjuster;
 import flambe.System;
+import flambe.math.FMath;
 
 import snake.core.GameManager;
 import snake.core.SceneManager;
@@ -102,6 +105,66 @@ class SnakeGame extends Component
 			}
 		}));
 		
+		#if android
+		var hasClicked: Bool = false;
+		var startPoint: Point = new Point(0, 0);
+		var endPoint: Point = new Point(0, 0);
+		
+		snakeDisposer.add(System.pointer.down.connect(function(event: PointerEvent) {
+			startPoint = new Point(event.viewX - (System.stage.width / 2), (System.stage.height / 2) - event.viewY);
+			hasClicked = true;
+		}));
+		
+		snakeDisposer.add(System.pointer.up.connect(function(event: PointerEvent) {
+			if (!hasClicked)
+				return;
+				
+				endPoint = new Point(event.viewX - (System.stage.width / 2), (System.stage.height / 2) - event.viewY);
+			
+				var direction: Point = new Point(
+				endPoint.x - startPoint.x,
+				endPoint.y - startPoint.y
+			);
+			
+			if (Math.abs(direction.x) > Math.abs(direction.y)) {
+				if (direction.x > 0) {
+					if (snakeDirection == SnakeDirection.Left) 
+						return;
+					
+					direction = new Point(1, 0);
+					snakeDirection = SnakeDirection.Right;
+				}
+				else {
+					if (snakeDirection == SnakeDirection.Right) 
+						return;
+					
+					direction = new Point( -1, 0);
+					snakeDirection = SnakeDirection.Left;
+				}
+			}
+			else {
+				if (direction.y > 0) {
+					if (snakeDirection == SnakeDirection.Down) 
+						return;
+						
+					direction = new Point(0, 1);
+					snakeDirection = SnakeDirection.Up;
+					
+				}
+				else {
+					if (snakeDirection == SnakeDirection.Up) 
+						return;
+					
+					direction = new Point(0, -1);
+					snakeDirection = SnakeDirection.Down;
+				}
+			}
+			
+			hasClicked = false;
+			
+		}));
+		#end
+		
 		var script: Script = new Script();
 		script.run(new Repeat(
 			new Sequence([
@@ -162,7 +225,7 @@ class SnakeGame extends Component
 				script.run(new Sequence([
 					new AnimateTo(worldSpeed.scale, 0, 0.1),
 					new CallFunction(function() {
-						Utils.ConsoleLog("Game Over!");
+						//Utils.ConsoleLog("Game Over!");
 						SceneManager.current.ShowGameOverScreen(false);
 						GameManager.current.SetGameHighScore(GameManager.current.gameScore);
 					})

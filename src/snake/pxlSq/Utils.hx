@@ -65,4 +65,23 @@ class Utils
 		
 		return result;
 	}
+	
+	public static function GetSnakeDirection(x: Int, y: Int): SnakeDirection {
+		var result: SnakeDirection = SnakeDirection.None;
+		
+		if (x == 1 && y == 0) {
+			result = SnakeDirection.Right;
+		}
+		else if (x == -1 && y == 0) {
+			result = SnakeDirection.Left;
+		}
+		else if (x == 0 && y == 1) {
+			result = SnakeDirection.Up;
+		}
+		else if (x == 0 && y == -1) {
+			result = SnakeDirection.Down;
+		}
+		
+		return result;
+	}
 }
