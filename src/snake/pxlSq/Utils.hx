@@ -18,6 +18,7 @@ import flash.external.ExternalInterface;
  */
 class Utils
 {
+	/* Remove this on mobile builds */
 	public static function ConsoleLog(str: String) {
 		#if flash
 		ExternalInterface.call("console.log", str);

@@ -161,7 +161,7 @@ class GameDelayScreen extends Component implements IScreen
 	override public function onAdded() 
 	{
 		super.onAdded();
-		Utils.ConsoleLog(GetScreenName() + " ADDED!");
+		//Utils.ConsoleLog(GetScreenName() + " ADDED!");
 		screenDisposer = owner.get(Disposer);
 		if (screenDisposer == null) {
 			owner.add(screenDisposer = new Disposer());
@@ -171,13 +171,13 @@ class GameDelayScreen extends Component implements IScreen
 	override public function onRemoved() 
 	{
 		super.onRemoved();
-		Utils.ConsoleLog(GetScreenName() + " REMOVED!");
+		//Utils.ConsoleLog(GetScreenName() + " REMOVED!");
 	}
 	
 	override public function dispose() 
 	{
 		super.dispose();
-		Utils.ConsoleLog(GetScreenName() + " DISPOSED!");
+		//Utils.ConsoleLog(GetScreenName() + " DISPOSED!");
 		screenDisposer.dispose();
 	}
 }

@@ -139,13 +139,13 @@ class GameScreen extends Component implements IScreen
 		snakeGame = new snake.SnakeGame();
 		
 		if (id == 0) {
-			snakeGame.SetSnakeSpeed(0.5);
+			snakeGame.SetSnakeSpeed(0.3);
 		}
 		else if (id == 1) {
-			snakeGame.SetSnakeSpeed(0.25);
+			snakeGame.SetSnakeSpeed(0.15);
 		}
 		else if (id == 2) {
-			snakeGame.SetSnakeSpeed(0.1);
+			snakeGame.SetSnakeSpeed(0.075);
 		}
 		
 		// Add foodspawner
@@ -154,11 +154,11 @@ class GameScreen extends Component implements IScreen
 		
 		snakeGame.onCollide = function(node: SnakeNode) {
 			if (node.nodeType == NodeType.Wall) {
-				Utils.ConsoleLog("WALL!");
+				//Utils.ConsoleLog("WALL!");
 			}
 			
 			if (node.nodeType == NodeType.Food) {
-				Utils.ConsoleLog("FOOD!");			
+				//Utils.ConsoleLog("FOOD!");			
 				// Remove if the node is comming from the spawner
 				if (node.nodeNameId == snakeGame.snakeEntity.get(FoodSpawner).GetNodeName()) {
 					foodSpawner.SubtractFoodCount();
@@ -195,7 +195,7 @@ class GameScreen extends Component implements IScreen
 	override public function onAdded() 
 	{
 		super.onAdded();
-		Utils.ConsoleLog(GetScreenName() + " ADDED!");
+		//Utils.ConsoleLog(GetScreenName() + " ADDED!");
 		screenDisposer = owner.get(Disposer);
 		if (screenDisposer == null) {
 			owner.add(screenDisposer = new Disposer());
@@ -205,13 +205,13 @@ class GameScreen extends Component implements IScreen
 	override public function onRemoved() 
 	{
 		super.onRemoved();
-		Utils.ConsoleLog(GetScreenName() + " REMOVED!");
+		//Utils.ConsoleLog(GetScreenName() + " REMOVED!");
 	}
 	
 	override public function dispose() 
 	{
 		super.dispose();
-		Utils.ConsoleLog(GetScreenName() + " DISPOSED!");
+		//Utils.ConsoleLog(GetScreenName() + " DISPOSED!");
 		screenDisposer.dispose();
 	}
 }

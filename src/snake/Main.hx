@@ -27,41 +27,21 @@ class Main
         var manifest = Manifest.fromAssets("bootstrap");
         var loader = System.loadAssetPack(manifest);
 		
-		//loader.progressChanged.connect(function() {
-			//Utils.ConsoleLog(loader.progress + " " + loader.total);
-		//});
-		
 		loader.get(function(pack: AssetPack) {
-			var preloader: Entity = PreloaderScene.Initialize(pack, loader);
+			var promise = System.loadAssetPack(Manifest.fromAssets("main"));
+			promise.get(function(mainPack: AssetPack) {
+				var gameManager: GameManager = new GameManager();
+				gameManager.SetGameAssets(mainPack);
+				gameManager.SetGameDirector(director);
+				gameManager.SetGameStorage(storage);
+				gameManager.Initialize();
+				
+				var sceneManager: SceneManager = gameManager;
+				sceneManager.ShowTitleScreen(true);
+			});
+			
+			var preloader: Entity = PreloaderScene.Initialize(pack, promise);
 			director.unwindToScene(preloader);
-			
-			var gameManager: GameManager = new GameManager();
-			gameManager.SetGameAssets(pack);
-			gameManager.SetGameDirector(director);
-			gameManager.SetGameStorage(storage);
-			gameManager.Initialize();
-			
-			var sceneManager: SceneManager = gameManager;
-			sceneManager.ShowTitleScreen(false);
-			
-			//var sceneManager: SceneManager = new SceneManager();
-			//sceneManager.Initialize(pack, director, storage);
-			//sceneManager.ShowChooseYourLevelScreen(false);
 		});
-		
-        //loader.get(onSuccess);
     }
-
-    //private static function onSuccess (pack :AssetPack)
-    //{
-        //// Add a solid color background
-        //var background = new FillSprite(0x202020, System.stage.width, System.stage.height);
-        //System.root.addChild(new Entity().add(background));
-		
-        //// Add a plane that moves along the screen
-        //var plane = new ImageSprite(pack.getTexture("plane"));
-        //plane.x._ = 30;
-        //plane.y.animateTo(200, 6);
-        //System.root.addChild(new Entity().add(plane));
-    //}
 }

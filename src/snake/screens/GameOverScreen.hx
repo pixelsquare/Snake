@@ -127,6 +127,7 @@ class GameOverScreen extends Component implements IScreen
 		var highestScoreFont: Font = new Font(gameAssets, AssetName.FONT_UNCERTAIN_SANS_40);
 		var highestScoreText: TextSprite = new TextSprite(highestScoreFont, "Highest Score!");
 		highestScoreText.centerAnchor();
+		highestScoreText.setXY(yourScoreText.x._ + (yourScoreText.getNaturalWidth() / 2), 0);
 		highestScoreText.alpha.animate(0, 1, 0.5);
 		highestScoreText.y.animate(0, yourScoreText.y._ - 10, 0.5);
 		highestScoreText.rotation.animate(0, 15, 0.5);
@@ -162,7 +163,7 @@ class GameOverScreen extends Component implements IScreen
 	override public function onAdded() 
 	{
 		super.onAdded();
-		Utils.ConsoleLog(GetScreenName() + " ADDED!");
+		//Utils.ConsoleLog(GetScreenName() + " ADDED!");
 		screenDisposer = owner.get(Disposer);
 		if (screenDisposer == null) {
 			owner.add(screenDisposer = new Disposer());
@@ -172,13 +173,13 @@ class GameOverScreen extends Component implements IScreen
 	override public function onRemoved() 
 	{
 		super.onRemoved();
-		Utils.ConsoleLog(GetScreenName() + " REMOVED!");
+		//Utils.ConsoleLog(GetScreenName() + " REMOVED!");
 	}
 	
 	override public function dispose() 
 	{
 		super.dispose();
-		Utils.ConsoleLog(GetScreenName() + " DISPOSED!");
+		//Utils.ConsoleLog(GetScreenName() + " DISPOSED!");
 		screenDisposer.dispose();
 	}
 }
