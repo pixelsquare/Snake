@@ -81,6 +81,26 @@ class GameOverScreen extends Component implements IScreen
 		scoreText.alpha.animate(0, 1, 0.5);
 		screenEntity.addChild(new Entity().add(scoreText));
 		
+		var highScoreFont: Font = new Font(gameAssets, AssetName.FONT_UNCERTAIN_SANS_32);
+		var highScoreText: TextSprite = new TextSprite(highScoreFont, "High Score");
+		highScoreText.centerAnchor();
+		highScoreText.setXY(
+			System.stage.width / 2,
+			System.stage.height * 0.65
+		);
+		highScoreText.alpha.animate(0, 1, 0.5);
+		screenEntity.addChild(new Entity().add(highScoreText));
+		
+		var highScoreNumFont: Font = new Font(gameAssets, AssetName.FONT_UNCERTAIN_SANS_32);
+		var highScoreNumText: TextSprite = new TextSprite(highScoreNumFont, GameManager.current.gameHighScore + "");
+		//highScoreNumText.centerAnchor();
+		highScoreNumText.setXY(
+			highScoreText.x._ - (highScoreNumText.getNaturalWidth() / 2),
+			highScoreText.y._ + (highScoreNumText.getNaturalHeight() / 2)
+		);
+		highScoreNumText.alpha.animate(0, 1, 0.5);
+		screenEntity.addChild(new Entity().add(highScoreNumText));
+		
 		var goToMenuEntity: Entity = new Entity();
 		screenDisposer.add(goToMenuEntity);
 		
@@ -106,7 +126,7 @@ class GameOverScreen extends Component implements IScreen
 			
 		goToMenuBG.setXY(
 			System.stage.width / 2,
-			System.stage.height * 0.7
+			System.stage.height * 0.85
 		);
 		
 		goToMenuBG.alpha.animate(0, 1, 0.5);

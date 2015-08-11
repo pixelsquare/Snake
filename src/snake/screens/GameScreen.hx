@@ -124,11 +124,12 @@ class GameScreen extends Component implements IScreen
 			}
 		}
 		
-		// Setup grid walls
+		// Setup grid walls	
 		for (ii in 0...GRID_ROWS) {
 			if (ii == ((GRID_ROWS -1) / 2)) {
 				continue;
 			}
+			
 			gameGrid[ii].SetIsBlocked(true);
 			gameGrid[ii].SetNodeType(NodeType.Wall);
 			gameGrid[ii].SetNodeNameID(NodeName.NODE_GRID_BLOCKER);
@@ -143,7 +144,7 @@ class GameScreen extends Component implements IScreen
 			gameGrid[rightIndx].SetNodeType(NodeType.Wall);
 			gameGrid[rightIndx].SetNodeNameID(NodeName.NODE_GRID_BLOCKER);
 			
-			var bottomIndx: Int = ((GRID_ROWS * GRID_COLUMNS) - GRID_ROWS) + ii;
+			var bottomIndx: Int = (GRID_ROWS * GRID_COLUMNS) - ii - 1;
 			gameGrid[bottomIndx].SetIsBlocked(true);
 			gameGrid[bottomIndx].SetNodeType(NodeType.Wall);
 			gameGrid[bottomIndx].SetNodeNameID(NodeName.NODE_GRID_BLOCKER);

@@ -77,28 +77,28 @@ class SnakeGame extends Component
 		
 		snakeDisposer.add(System.keyboard.down.connect(function(event: KeyboardEvent) {
 			if (event.key == Key.Right) {
-				if (snakeDirection == SnakeDirection.Left) 
+				if (snakeDirection == SnakeDirection.Left || snakeHead.gridAddress.x == 33) 
 					return;
 					
 				snakeDirection = SnakeDirection.Right;
 			}
 			
 			if (event.key == Key.Left) {
-				if (snakeDirection == SnakeDirection.Right) 
+				if (snakeDirection == SnakeDirection.Right || snakeHead.gridAddress.x == 1) 
 					return;
 				
 				snakeDirection = SnakeDirection.Left;
 			}
 			
 			if (event.key == Key.Up) {
-				if (snakeDirection == SnakeDirection.Down) 
+				if (snakeDirection == SnakeDirection.Down || snakeHead.gridAddress.y == 1) 
 					return;
 				
 				snakeDirection = SnakeDirection.Up;
 			}
 			
 			if (event.key == Key.Down) {
-				if (snakeDirection == SnakeDirection.Up) 
+				if (snakeDirection == SnakeDirection.Up || snakeHead.gridAddress.y == 33) 
 					return;
 				
 				snakeDirection = SnakeDirection.Down;
@@ -128,14 +128,14 @@ class SnakeGame extends Component
 			
 			if (Math.abs(direction.x) > Math.abs(direction.y)) {
 				if (direction.x > 0) {
-					if (snakeDirection == SnakeDirection.Left) 
+					if (snakeDirection == SnakeDirection.Left || snakeHead.gridAddress.x == 33) 
 						return;
 					
 					direction = new Point(1, 0);
 					snakeDirection = SnakeDirection.Right;
 				}
 				else {
-					if (snakeDirection == SnakeDirection.Right) 
+					if (snakeDirection == SnakeDirection.Right || snakeHead.gridAddress.x == 1)  
 						return;
 					
 					direction = new Point( -1, 0);
@@ -144,7 +144,7 @@ class SnakeGame extends Component
 			}
 			else {
 				if (direction.y > 0) {
-					if (snakeDirection == SnakeDirection.Down) 
+					if (snakeDirection == SnakeDirection.Down || snakeHead.gridAddress.y == 1) 
 						return;
 						
 					direction = new Point(0, 1);
@@ -152,7 +152,7 @@ class SnakeGame extends Component
 					
 				}
 				else {
-					if (snakeDirection == SnakeDirection.Up) 
+					if (snakeDirection == SnakeDirection.Up || snakeHead.gridAddress.y == 33) 
 						return;
 					
 					direction = new Point(0, -1);
