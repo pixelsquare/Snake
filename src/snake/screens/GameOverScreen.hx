@@ -11,6 +11,7 @@ import flambe.Entity;
 import flambe.input.PointerEvent;
 import flambe.scene.Scene;
 import flambe.System;
+import flambe.animation.Ease;
 
 import snake.core.GameManager;
 import snake.core.SceneManager;
@@ -50,30 +51,34 @@ class GameOverScreen extends Component implements IScreen
 		screenBackground.alpha.animate(0, 0.85, 0.5);
 		screenEntity.addChild(new Entity().add(screenBackground));
 		
-		var gameOverFont: Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
+		var gameOverFont: Font = new Font(gameAssets, AssetName.FONT_VANADINE_80);
 		var gameOverText: TextSprite = new TextSprite(gameOverFont, "Game Over");
 		gameOverText.centerAnchor();
 		gameOverText.setXY(
 			System.stage.width / 2,
 			System.stage.height * 0.3
 		);
+		gameOverText.alpha.animate(0, 1, 0.5);
+		gameOverText.y.animate(System.stage.height * 0.2, System.stage.height * 0.3, 0.5, Ease.elasticInOut);
 		screenEntity.addChild(new Entity().add(gameOverText));
 		
-		var yourScoreFont: Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
+		var yourScoreFont: Font = new Font(gameAssets, AssetName.FONT_UNCERTAIN_SANS_32);
 		yourScoreText = new TextSprite(yourScoreFont, "Your Score");
 		yourScoreText.centerAnchor();
 		yourScoreText.setXY(
 			System.stage.width / 2,
-			System.stage.height * 0.45
+			System.stage.height * 0.5
 		);
+		yourScoreText.alpha.animate(0, 1, 0.5);
 		screenEntity.addChild(new Entity().add(yourScoreText));
 		
-		var scoreFont: Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
+		var scoreFont: Font = new Font(gameAssets, AssetName.FONT_UNCERTAIN_SANS_32);
 		scoreText = new TextSprite(scoreFont, "0000");
 		scoreText.setXY(
 			yourScoreText.x._ - (scoreText.getNaturalWidth() / 2),
 			yourScoreText.y._ + (scoreText.getNaturalHeight() / 2)
 		);
+		scoreText.alpha.animate(0, 1, 0.5);
 		screenEntity.addChild(new Entity().add(scoreText));
 		
 		var goToMenuEntity: Entity = new Entity();
@@ -103,18 +108,32 @@ class GameOverScreen extends Component implements IScreen
 			System.stage.width / 2,
 			System.stage.height * 0.7
 		);
+		
+		goToMenuBG.alpha.animate(0, 1, 0.5);
 		goToMenuEntity.add(goToMenuBG);
 		
-		var goToMenuFont: Font = new Font(gameAssets, AssetName.FONT_APPLE_GARAMOND_32);
+		var goToMenuFont: Font = new Font(gameAssets, AssetName.FONT_UNCERTAIN_SANS_32b);
 		var goToMenuText: TextSprite = new TextSprite(goToMenuFont, "Go To Menu");
 		goToMenuText.centerAnchor();
 		goToMenuText.setXY(
 			goToMenuText.x._ + (goToMenuBG.getNaturalWidth() / 2),
 			goToMenuText.y._ + (goToMenuBG.getNaturalHeight() / 2)
 		);
+		goToMenuText.alpha.animate(0, 1, 0.5);
 		goToMenuEntity.addChild(new Entity().add(goToMenuText));
 		
 		screenEntity.addChild(goToMenuEntity);
+		
+		var highestScoreFont: Font = new Font(gameAssets, AssetName.FONT_UNCERTAIN_SANS_40);
+		var highestScoreText: TextSprite = new TextSprite(highestScoreFont, "Highest Score!");
+		highestScoreText.centerAnchor();
+		highestScoreText.alpha.animate(0, 1, 0.5);
+		highestScoreText.y.animate(0, yourScoreText.y._ - 10, 0.5);
+		highestScoreText.rotation.animate(0, 15, 0.5);
+		
+		if(GameManager.current.HasBeatenHighestScore()) {
+			screenEntity.addChild(new Entity().add(highestScoreText));
+		}
 		
 		SetScoreDirty();
 	

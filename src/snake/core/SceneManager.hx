@@ -2,6 +2,7 @@ package snake.core;
 
 import flambe.animation.Ease;
 import flambe.scene.SlideTransition;
+import flambe.scene.FadeTransition;
 
 import snake.screens.GameOverScreen;
 import snake.screens.ChooseYourLevelScreen;
@@ -101,7 +102,7 @@ class SceneManager extends Manager
 	
 	public function ShowGameScreen(animate: Bool): Void {
 		gameDirector.unwindToScene(gameGameScreen.ScreenEntity(), 
-			animate ? new SlideTransition(0.5, Ease.quadOut) : null);
+			animate ? new FadeTransition(0.5, Ease.sineOut) : null);
 	}
 	
 	public function ShowGameOverScreen(animate: Bool): Void {

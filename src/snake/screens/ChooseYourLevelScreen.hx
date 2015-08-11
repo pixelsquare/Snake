@@ -11,6 +11,7 @@ import flambe.Entity;
 import flambe.input.PointerEvent;
 import flambe.scene.Scene;
 import flambe.System;
+import flambe.animation.Ease;
 
 import snake.core.GameManager;
 import snake.core.SceneManager;
@@ -46,13 +47,14 @@ class ChooseYourLevelScreen extends Component implements IScreen
 		screenBackground = new FillSprite(SceneManager.SCENE_DEFAULT_BG, System.stage.width, System.stage.height);
 		screenEntity.addChild(new Entity().add(screenBackground));
 		
-		var chooseYourLevelFont: Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
+		var chooseYourLevelFont: Font = new Font(gameAssets, AssetName.FONT_VANADINE_60);
 		var chooseYourLevelText: TextSprite = new TextSprite(chooseYourLevelFont, "Choose your level");
 		chooseYourLevelText.centerAnchor();
 		chooseYourLevelText.setXY(
 			System.stage.width / 2,
 			System.stage.height * 0.3
 		);
+		chooseYourLevelText.alpha.animate(0, 1, 0.5);
 		screenEntity.addChild(new Entity().add(chooseYourLevelText));
 		
 		for (ii in 0...3) {
@@ -60,7 +62,7 @@ class ChooseYourLevelScreen extends Component implements IScreen
 			var levelBG: ImageSprite = new ImageSprite(GameManager.current.buttonDefaultTexture);
 			levelBG.centerAnchor();
 			
-			screenDisposer.add(levelBG.pointerIn.connect(function(event: PointerEvent) {
+			screenDisposer.add(levelBG.pointerIn.connect(function(event: PointerEvent) {					
 				levelBG.texture = GameManager.current.buttonHoverTexture;
 			}));
 			
@@ -74,14 +76,14 @@ class ChooseYourLevelScreen extends Component implements IScreen
 			
 			screenDisposer.add(levelBG.pointerUp.connect(function(event: PointerEvent) {
 				levelBG.texture = GameManager.current.buttonDefaultTexture;
-				SceneManager.current.ShowGameScreen(false);
+				SceneManager.current.ShowGameScreen(true);
 				SceneManager.current.ShowGameDelayScreen(false);
 				SceneManager.current.gameGameScreen.InitializeSnake(ii);		
 			}));
 			
 			levelEntity.add(levelBG);
 			
-			var levelFont: Font = new Font(gameAssets, AssetName.FONT_APPLE_GARAMOND_32);
+			var levelFont: Font = new Font(gameAssets, AssetName.FONT_UNCERTAIN_SANS_32b);
 			var levelText: TextSprite = new TextSprite(levelFont, "Level " + (ii + 1));
 			levelText.centerAnchor();
 			
@@ -96,6 +98,9 @@ class ChooseYourLevelScreen extends Component implements IScreen
 				levelText.x._ + (levelBG.getNaturalWidth() / 2),
 				levelText.y._ + (levelBG.getNaturalHeight() / 2)
 			);
+			
+			levelBG.alpha.animate(0, 1, (ii + 1) * 0.4);
+			levelBG.y.animate(0, System.stage.height * 0.3 + ((ii + 1) * 60), (ii + 1) * 0.4, Ease.elasticInOut);
 			
 			levelEntity.addChild(new Entity().add(levelText));
 			

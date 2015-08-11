@@ -35,10 +35,11 @@ class TitleScreen extends Component implements IScreen
 	
 	private var highScoreText: 	TextSprite;
 	private var scoreText: 		TextSprite;
+	private var canStart:		Bool;
 	
 	public function new () { }
 	
-	public function ScreenEntity(): Entity {
+	public function ScreenEntity(): Entity {	
 		screenScene = new Scene();
 		screenEntity = new Entity();
 		
@@ -51,27 +52,27 @@ class TitleScreen extends Component implements IScreen
 		screenEntity.addChild(new Entity().add(screenBackground));
 		
 		// Title text
-		var titleFont: Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
+		var titleFont: Font = new Font(gameAssets, AssetName.FONT_VANADINE_100);
 		var titleText: TextSprite = new TextSprite(titleFont, "SNaKE");
 		titleText.centerAnchor();
 		titleText.setXY(
 			System.stage.width / 2,
-			System.stage.height * 0.4
+			System.stage.height * 0.35
 		);
 		screenEntity.addChild(new Entity().add(titleText));
 		
 		// Click anywhere to start text
-		var clickToStartFont: Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
+		var clickToStartFont: Font = new Font(gameAssets, AssetName.FONT_UNCERTAIN_SANS_32);
 		var clickToStartText: TextSprite = new TextSprite(clickToStartFont, "Click anywhere to Start!");
 		clickToStartText.centerAnchor();
 		clickToStartText.setXY(
 			System.stage.width / 2,
-			System.stage.height * 0.6
+			System.stage.height * 0.55
 		);
 		screenEntity.addChild(new Entity().add(clickToStartText));
 		
 		// Highscore text
-		var highScoreFont: Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
+		var highScoreFont: Font = new Font(gameAssets, AssetName.FONT_UNCERTAIN_SANS_40);
 		highScoreText = new TextSprite(highScoreFont, "High Score");
 		highScoreText.centerAnchor();
 		highScoreText.setXY(
@@ -81,7 +82,7 @@ class TitleScreen extends Component implements IScreen
 		screenEntity.addChild(new Entity().add(highScoreText));
 		
 		// Score Text
-		var scoreFont: Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
+		var scoreFont: Font = new Font(gameAssets, AssetName.FONT_UNCERTAIN_SANS_40);
 		scoreText = new TextSprite(scoreFont, "00000");
 		scoreText.setXY(
 			highScoreText.x._ - (scoreText.getNaturalWidth() / 2),
@@ -90,7 +91,10 @@ class TitleScreen extends Component implements IScreen
 		screenEntity.addChild(new Entity().add(scoreText));
 		
 		// Manually dispose pointer event
-		screenDisposer.add(System.pointer.down.connect(function(event: PointerEvent) {
+		screenDisposer.add(System.pointer.up.connect(function(event: PointerEvent) {
+			if (!canStart)
+				return;
+			
 			SceneManager.current.ShowChooseYourLevelScreen(true);
 		}));
 		
@@ -133,6 +137,12 @@ class TitleScreen extends Component implements IScreen
 		if (screenDisposer == null) {
 			owner.add(screenDisposer = new Disposer());
 		}
+	}
+	
+	override public function onUpdate(dt:Float) 
+	{
+		super.onUpdate(dt);
+		canStart = System.pointer.isDown();
 	}
 	
 	override public function onRemoved() 

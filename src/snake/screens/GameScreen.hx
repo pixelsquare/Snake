@@ -59,16 +59,16 @@ class GameScreen extends Component implements IScreen
 		screenBackground = new FillSprite(SceneManager.SCENE_DEFAULT_BG, System.stage.width, System.stage.height);
 		screenEntity.addChild(new Entity().add(screenBackground));
 		
-		var scoreFont: Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
+		var scoreFont: Font = new Font(gameAssets, AssetName.FONT_UNCERTAIN_SANS_50);
 		scoreText = new TextSprite(scoreFont, "SCORE");
 		scoreText.centerAnchor();
 		scoreText.setXY(
-			System.stage.width * 0.875,
+			System.stage.width * 0.85,
 			System.stage.height * 0.4
 		);
 		screenEntity.addChild(new Entity().add(scoreText));
 		
-		var scoreNumFont:Font = new Font(gameAssets, AssetName.FONT_ARIAL_32);
+		var scoreNumFont:Font = new Font(gameAssets, AssetName.FONT_UNCERTAIN_SANS_50);
 		scoreNumText = new TextSprite(scoreNumFont, "");
 		scoreNumText.setXY(
 			scoreText.x._ - (scoreNumText.getNaturalWidth() / 2),

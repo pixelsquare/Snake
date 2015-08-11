@@ -19,6 +19,14 @@ class AssetName
 	public static inline var FONT_BETTY_20: 				String = "fonts/Betty_20";
 	public static inline var FONT_BETTY_32: 				String = "fonts/Betty_32";
 	public static inline var FONT_HAZEL_GRACE_80:			String = "fonts/HazelGrace_80";
+	public static inline var FONT_VANADINE_32:				String = "fonts/Vanadine_32";
+	public static inline var FONT_VANADINE_60:				String = "fonts/Vanadine_60";
+	public static inline var FONT_VANADINE_80:				String = "fonts/Vanadine_80";
+	public static inline var FONT_VANADINE_100:				String = "fonts/Vanadine_100";
+	public static inline var FONT_UNCERTAIN_SANS_32:		String = "fonts/UncertainSans_32";
+	public static inline var FONT_UNCERTAIN_SANS_32b:		String = "fonts/UncertainSans_32b";
+	public static inline var FONT_UNCERTAIN_SANS_40:		String = "fonts/UncertainSans_40";
+	public static inline var FONT_UNCERTAIN_SANS_50:		String = "fonts/UncertainSans_50";
 	
 	public static inline var BUTTON_GREY_1:					String = "UI/grey_button00";
 	public static inline var BUTTON_GREY_2:					String = "UI/grey_button01";

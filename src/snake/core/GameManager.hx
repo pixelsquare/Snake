@@ -58,6 +58,10 @@ class GameManager extends SceneManager
 		gameScore = 0;
 	}
 	
+	public function HasBeatenHighestScore(): Bool {
+		return gameScore > gameHighScore;
+	}
+	
 	public function ResetHighestScore(): Void {
 		gameHighScore = 0;
 		gameTitleScreen.SetHighScoreDirty();
